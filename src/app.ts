@@ -1,13 +1,14 @@
-import express from "express"
-import { UserRouter } from "./controllers/users/user.route.js"
+import express, { Request, Response, NextFunction } from "express"
+import { UserRouter } from "./controllers/users/user.route"
 
 export class App {
+    public host
     constructor() {
         this.host = express()
         this.host.use(express.json())
 
         this.host.get("/", (req, res, next) => {
-            res.send("Hello world")
+            return res.send("Hello world")
         })
 
         this.host.use((req, res, next) => {
@@ -15,14 +16,18 @@ export class App {
             next();
         });
 
-        const usersRoute = new UserRouter
+        const usersRoute = new UserRouter()
         this.host.use(`/api/${usersRoute.path}`, usersRoute.router)
 
         this.host.use((error, req, res, next) => {
-            res.status(400).json(error)
+            if (res.headersSent) {
+                return next(error);
+            }
+
+            res.status(400).json(error);        
         })
 
-        this.host.use((req, res, next) => {
+        this.host.use((req: Request, res: Response, next: NextFunction) => {
             res.status(404).send("No Endpoint found");
         });
 
