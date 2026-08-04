@@ -13,3 +13,11 @@ docker.env
 .env 
 
 /src/generated/prisma
+
+dist/
+build/
+.next/
+.turbo/
+apps/api/data/
+.env
+!.env.example

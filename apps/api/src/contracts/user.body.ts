@@ -1,0 +1,26 @@
+import { ApiProperty } from "@nestjs/swagger";
+import { Exclude, Expose } from "class-transformer";
+import { IsEmail, IsString, Length } from "class-validator";
+
+// For safety we'll exclude everything from being transformed by placing a @Exclude() decorator on the class declaration
+@Exclude()
+export class UserBody {
+	// We can expose the properties we want included one by one
+	@Expose()
+	@IsString()
+	@ApiProperty()
+	public name: string;
+
+	@Expose()
+	// We can start adding validation decorators that specify exactly what we expect from the object we will be validating
+	@IsEmail()
+	@ApiProperty()
+	public email: string;
+
+	@Expose()
+	@IsString()
+	@ApiProperty()
+	@Length(8)
+	public password: string;
+}
+
