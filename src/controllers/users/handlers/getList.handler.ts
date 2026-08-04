@@ -1,7 +1,10 @@
-import { UserStore } from "./user.store"
-import { NextFunction, Request, Response } from "express"
+import { SearchQuery } from "../../../contracts/search.query"
+import { User, UserStore } from "./user.store"
 
-export const getList = (req: Request, res: Response, next: NextFunction) => {
-    const users = UserStore.find(req.query.search?.toString())
-    return res.json(users)
+export const getList = (query: string): User[] => {
+    const users = UserStore.find(query)
+
+    users.forEach( user => delete user.password )
+
+    return users
 }

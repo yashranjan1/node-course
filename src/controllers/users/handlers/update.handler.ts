@@ -1,35 +1,17 @@
-// update.handler.ts
-import { plainToInstance } from "class-transformer";
-import { validate } from "class-validator";
-import { NextFunction, Request, Response } from "express";
+
 
 import { UserBody } from "../../../contracts/user.body";
-import { UserView } from "../../../contracts/user.view";
 import { UserStore } from "./user.store";
+import { NotFoundException } from "@nestjs/common";
 
-export const updateUserById = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
-	const transformed = plainToInstance(UserBody, req.body, {
-		exposeUnsetFields: false, // Don't include undefined properties
-	});
-	const validationErrors = await validate(transformed, {
-		skipMissingProperties: true, // Allow partial updates
-		whitelist: true,
-		forbidNonWhitelisted: true,
-	});
-	if (validationErrors.length) {
-		return next(validationErrors);
-	}
-
-	const id = parseInt(req.params.id.toString());
+export const updateUserById = async (id: number, body: UserBody) => {
 	const user = UserStore.get(id);
 	if (!user) {
-		return res.status(404).json({ error: "User not found" });
+		throw new NotFoundException("User not found")
 	}
-	const updated = UserStore.update(id, { ...user, ...transformed });
+	const updated = UserStore.update(id, { ...user, ...body });
 
-	res.json(plainToInstance(UserView, updated));
+	delete updated.password
+
+	return updated
 };
