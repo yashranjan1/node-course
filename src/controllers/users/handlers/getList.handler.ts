@@ -1,10 +1,32 @@
-import { SearchQuery } from "../../../contracts/search.query"
-import { User, UserStore } from "./user.store"
+import { prisma } from "../../../lib/prisma";
+import { User } from "./user.store";
 
-export const getList = (query: string): User[] => {
-    const users = UserStore.find(query)
+export const getList = async (query: string): Promise<User[]> => {
+	const users = await prisma.user.findMany({
+		where: {
+			OR: [
+				{
+					name: {
+						contains: query,
+					},
+				},
+				{
+					email: {
+						contains: query,
+					},
+				},
+			],
+		},
+	});
 
-    users.forEach( user => delete user.password )
+	let passwordless = [];
 
-    return users
-}
+	users.forEach((user) => {
+		passwordless.push({
+			name: user.name,
+			id: user.id,
+			email: user.email,
+		});
+	});
+	return passwordless;
+};

@@ -8,3 +8,8 @@
 **/.playwright-mcp/
 
 code/example3/dist/
+
+docker.env
+.env 
+
+/src/generated/prisma

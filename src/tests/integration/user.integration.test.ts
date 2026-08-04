@@ -1,9 +1,10 @@
-import { User, UserStore } from "../../controllers/users/handlers/user.store";
-import { INestApplication, ValidationPipe } from "@nestjs/common";
+import { User } from "../../controllers/users/handlers/user.store";
+import { HttpStatus, INestApplication, ValidationPipe } from "@nestjs/common";
 import { before, beforeEach, after } from "mocha"
 import { AppModule } from "../../app.module"
 import {Test, TestingModule } from "@nestjs/testing";
 import request from "supertest"
+import { prisma } from "../../lib/prisma";
 
 describe("Integration tests", () => {
 	describe("User Tests", async () => {
@@ -35,11 +36,13 @@ describe("Integration tests", () => {
 
 			app.setGlobalPrefix("api");
 
+            await prisma.$connect();
+
 			await app.init();
 		});
         
         beforeEach(() => {
-            UserStore.users = [];
+            prisma.user.deleteMany()
         })
 
         after(async () => {
@@ -54,30 +57,38 @@ describe("Integration tests", () => {
                 email: "test-user+1@panenco.com",
                 password: "real secret stuff",
             } as User) 
-            .set("auth", "authHeader") 
-            .expect(201); 
+            .expect(HttpStatus.CREATED); 
         })   
         it("should get the newly created user by id", async () => {
             const { body: res } = await request(app.getHttpServer())
-            .post(`/api/users`)
-            .send({
-                name: "test",
-                email: "test-user+1@panenco.com",
-                password: "real secret stuff",
-            } as User)
-            .set("auth", "authHeader")
+                .post(`/api/users`)
+                .send({
+                    name: "test",
+                    email: "test-user+1@panenco.com",
+                    password: "real secret stuff",
+                } as User)
+
+            const { body: loginResponse } = await request(app.getHttpServer())
+                .post(`/api/auth/login`)    
+                .send({
+                    email: "test-user+1@panenco.com",
+                    password: "real secret stuff",
+                })
+                .expect(HttpStatus.OK);
 
             const id = res.id
             const user = await request(app.getHttpServer())
-            .get(`/api/users/${id}`)
-            .send()
-            .set("auth", "authHeader")
-            .expect({
-                name: "test",
-                email: "test-user+1@panenco.com",
-                id: 0,
-            })
+                .get(`/api/users/${id}`)
+                .send()
+                .set("x-auth", loginResponse.token)
+                .expect({
+                    name: "test",
+                    email: "test-user+1@panenco.com",
+                    id: 0,
+                })
+            .expect(HttpStatus.OK)
         })
+
         it("should update the user", async () => {
             const { body: res } = await request(app.getHttpServer())
             .post(`/api/users`) 
@@ -86,7 +97,14 @@ describe("Integration tests", () => {
                 email: "test-user+1@panenco.com",
                 password: "real secret stuff",
             } as User) 
-            .set("auth", "authHeader") 
+
+            const { body: loginResponse } = await request(app.getHttpServer())
+                .post(`/api/auth/login`)    
+                .send({
+                    email: "test-user+1@panenco.com",
+                    password: "real secret stuff",
+                })
+                .expect(HttpStatus.OK);
 
             const id = res.id
             await request(app.getHttpServer())
@@ -96,17 +114,19 @@ describe("Integration tests", () => {
                 email: "test-user+1@panenco.com",
                 password: "new password",
             })
-            .set("auth", "authHeader")
+            .set("x-auth", loginResponse.token)
 
             const user = await request(app.getHttpServer())
             .get(`/api/users/${id}`)
+            .set("x-auth", loginResponse.token)
             .send()
-            .set("auth", "authHeader")
             .expect({
                 name: "test",
                 email: "test-user+1@panenco.com",
                 id: 0,
             })
+            .expect(HttpStatus.OK)
+
         })
         it("should delete the user and make sure its not in the list", async () => {
             const { body: res } = await request(app.getHttpServer())
@@ -116,21 +136,28 @@ describe("Integration tests", () => {
                 email: "test-user+1@panenco.com",
                 password: "real secret stuff",
             } as User) 
-            .set("auth", "authHeader")
+
+            const { body: loginResponse } = await request(app.getHttpServer())
+                .post(`/api/auth/login`)    
+                .send({
+                    email: "test-user+1@panenco.com",
+                    password: "real secret stuff",
+                })
+                .expect(HttpStatus.OK);
 
             await request(app.getHttpServer())
             .delete(`/api/users/${res.id}`) 
-            .set("auth", "authHeader")
-            .expect(204)
+            .set("x-auth", loginResponse.token)
+            .expect(HttpStatus.NO_CONTENT)
 
             await request(app.getHttpServer())
             .get(`/api/users/${res.id}`)
-            .set("auth", "authHeader")
-            .expect(404)
+            .set("x-auth", loginResponse.token)
+            .expect(HttpStatus.NOT_FOUND)
 
             await request(app.getHttpServer())
             .get(`/api/users`)
-            .set("auth", "authHeader")
+            .set("x-auth", loginResponse.token)
             .expect([])
         })    
 	});
