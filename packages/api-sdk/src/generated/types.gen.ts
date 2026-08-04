@@ -21,6 +21,11 @@ export type LoginBody = {
     password: string;
 };
 
+export type AccessToken = {
+    token: string;
+    expiresIn: number;
+};
+
 export type ListUsersData = {
     body?: never;
     path?: never;
@@ -120,5 +125,10 @@ export type LoginData = {
 };
 
 export type LoginResponses = {
-    200: unknown;
+    /**
+     * User created successfully
+     */
+    201: AccessToken;
 };
+
+export type LoginResponse = LoginResponses[keyof LoginResponses];

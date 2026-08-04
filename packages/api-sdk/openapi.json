@@ -193,8 +193,15 @@
           }
         },
         "responses": {
-          "200": {
-            "description": ""
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessToken"
+                }
+              }
+            }
           }
         },
         "summary": "Login using credentials",
@@ -273,6 +280,21 @@
         "required": [
           "email",
           "password"
+        ]
+      },
+      "AccessToken": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "expiresIn": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "token",
+          "expiresIn"
         ]
       }
     }

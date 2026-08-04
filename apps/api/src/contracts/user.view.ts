@@ -7,7 +7,7 @@ export class UserView {
     @Expose()
 	@IsUUID()
 	@ApiProperty({ format: "uuid" })
-	public id: number;
+	public id: string;
 
 	@Expose()
 	@IsString()

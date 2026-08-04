@@ -3,11 +3,13 @@ import { UserController } from "./controllers/users/user.controller";
 import { APP_INTERCEPTOR, Reflector } from "@nestjs/core";
 import { TransformInterceptor } from "./interceptors/transform.interceptor";
 import { AuthController } from "./controllers/auth/auth.controller";
+import { PostController } from "./controllers/posts/post.controller";
 
 @Module({
 	controllers: [
         UserController,
-        AuthController
+        AuthController,
+		PostController
     ],
     providers: [
         // useFactory (rather than useClass) so the Reflector is passed to the

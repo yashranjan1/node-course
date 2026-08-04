@@ -3,6 +3,7 @@
 import { UserBody } from "../../../contracts/user.body";
 import { NotFoundException } from "@nestjs/common";
 import { prisma } from "../../../lib/prisma";
+import bcrypt from "bcryptjs";
 
 export const updateUserById = async (id: string, body: UserBody) => {
 	const user = await prisma.user.findFirst({
@@ -17,6 +18,9 @@ export const updateUserById = async (id: string, body: UserBody) => {
 		where: {
 			id: id,
 		},
-		data: body
+		data: {
+			...body, 
+			password: await bcrypt.hash(body.password, 10)
+		}
 	});
 };
