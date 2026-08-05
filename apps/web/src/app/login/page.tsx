@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { useLogin } from "@/lib/api-hooks";
-import { setToken } from "@/lib/auth";
+import { setId, setToken } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -41,6 +41,7 @@ export default function LoginPage() {
     loginMutation.mutate(values, {
       onSuccess: (data) => {
         setToken(data.token);
+        setId(data.userId)
         router.replace("/users");
       },
     });

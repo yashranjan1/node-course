@@ -1,4 +1,3 @@
-// apps/web/src/app/users/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -10,7 +9,7 @@ import {
   useUpdateUser,
   useUsers,
 } from "@/lib/api-hooks";
-import { clearToken, isAuthenticated } from "@/lib/auth";
+import { clearId, clearToken, isAuthenticated } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -41,6 +40,7 @@ export default function UsersPage() {
 
   const logout = () => {
     clearToken();
+    clearId();
     router.replace("/login");
   };
 
@@ -89,7 +89,7 @@ export default function UsersPage() {
                 Edit
               </Button>
               <Button
-                variant="danger"
+                variant="destructive"
                 disabled={deleteUser.isPending}
                 onClick={() => {
                   if (confirm(`Delete ${user.name}?`)) {

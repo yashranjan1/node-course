@@ -11,7 +11,7 @@ export type UserBody = {
 };
 
 export type UserView = {
-    id: number;
+    id: string;
     name: string;
     email: string;
 };
@@ -24,6 +24,22 @@ export type LoginBody = {
 export type AccessToken = {
     token: string;
     expiresIn: number;
+    userId: string;
+};
+
+export type PostBody = {
+    title: string;
+    description: string;
+    content: string;
+    authorId: string;
+};
+
+export type PostView = {
+    id: string;
+    title: string;
+    description: string;
+    content: string;
+    user: UserView;
 };
 
 export type ListUsersData = {
@@ -126,9 +142,100 @@ export type LoginData = {
 
 export type LoginResponses = {
     /**
-     * User created successfully
+     * User logged in successfully
      */
-    201: AccessToken;
+    200: AccessToken;
 };
 
 export type LoginResponse = LoginResponses[keyof LoginResponses];
+
+export type ListPostsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Filter posts by title, description or content
+         */
+        search?: string;
+    };
+    url: '/api/posts';
+};
+
+export type ListPostsResponses = {
+    /**
+     * Posts retrieved successfully
+     */
+    200: Array<PostView>;
+};
+
+export type ListPostsResponse = ListPostsResponses[keyof ListPostsResponses];
+
+export type CreatePostData = {
+    body: PostBody;
+    path?: never;
+    query?: never;
+    url: '/api/posts';
+};
+
+export type CreatePostResponses = {
+    /**
+     * Post created successfully
+     */
+    201: PostView;
+};
+
+export type CreatePostResponse = CreatePostResponses[keyof CreatePostResponses];
+
+export type DeletePostByIdData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/posts/{id}';
+};
+
+export type DeletePostByIdResponses = {
+    /**
+     * Post deleted successfully
+     */
+    204: void;
+};
+
+export type DeletePostByIdResponse = DeletePostByIdResponses[keyof DeletePostByIdResponses];
+
+export type GetPostByIdData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/posts/{id}';
+};
+
+export type GetPostByIdResponses = {
+    /**
+     * Post retrieved successfully
+     */
+    200: PostView;
+};
+
+export type GetPostByIdResponse = GetPostByIdResponses[keyof GetPostByIdResponses];
+
+export type UpdatePostData = {
+    body: PostBody;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/posts/{id}';
+};
+
+export type UpdatePostResponses = {
+    /**
+     * Post updated successfully
+     */
+    200: PostView;
+};
+
+export type UpdatePostResponse = UpdatePostResponses[keyof UpdatePostResponses];

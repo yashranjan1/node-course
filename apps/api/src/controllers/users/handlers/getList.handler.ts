@@ -1,7 +1,9 @@
 import { prisma } from "../../../lib/prisma";
-import { User } from "./user.store";
 
 export const getList = async (query: string) => {
+	if (!query) {
+		query = ""
+	}
 	return await prisma.user.findMany({
 		where: {
 			OR: [
@@ -18,5 +20,4 @@ export const getList = async (query: string) => {
 			],
 		},
 	});
-
 };

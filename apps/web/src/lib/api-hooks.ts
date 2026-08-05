@@ -3,10 +3,15 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  createPost,
   createUser,
+  deletePostById,
   deleteUserById,
+  listPosts,
   listUsers,
   login,
+  PostBody,
+  updatePost,
   updateUserById,
   type UserBody,
 } from "@node-course/api-sdk";
@@ -68,5 +73,55 @@ export function useDeleteUser() {
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: USERS_KEY }),
+  });
+}
+
+const POST_KEY = ["posts"]
+
+export function usePosts(search: string) {
+  return useQuery({
+    queryKey: [...POST_KEY, search],
+    queryFn: async () => {
+      const { data, error } = await listPosts({
+        query: search ? { search } : undefined,
+      });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+}
+
+export function useCreatePost() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: PostBody) => {
+      const { data, error } = await createPost({ body });
+      if (error) throw error;
+      return data!;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: POST_KEY }),
+  });
+}
+
+export function useUpdatePost() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, body }: { id: string; body: PostBody }) => {
+      const { data, error } = await updatePost({ path: { id }, body });
+      if (error) throw error;
+      return data!;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: POST_KEY }),
+  });
+}
+
+export function useDeletePost() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await deletePostById({ path: { id } });
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: POST_KEY }),
   });
 }

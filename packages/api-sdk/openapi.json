@@ -193,8 +193,8 @@
           }
         },
         "responses": {
-          "201": {
-            "description": "User created successfully",
+          "200": {
+            "description": "User logged in successfully",
             "content": {
               "application/json": {
                 "schema": {
@@ -207,6 +207,188 @@
         "summary": "Login using credentials",
         "tags": [
           "Auth"
+        ]
+      }
+    },
+    "/api/posts": {
+      "post": {
+        "operationId": "createPost",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Post created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostView"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-auth": []
+          }
+        ],
+        "summary": "Create a post",
+        "tags": [
+          "Post"
+        ]
+      },
+      "get": {
+        "operationId": "listPosts",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Filter posts by title, description or content",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Posts retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PostView"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-auth": []
+          }
+        ],
+        "summary": "List all posts",
+        "tags": [
+          "Post"
+        ]
+      }
+    },
+    "/api/posts/{id}": {
+      "patch": {
+        "operationId": "updatePost",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Post updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostView"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-auth": []
+          }
+        ],
+        "summary": "Update a post",
+        "tags": [
+          "Post"
+        ]
+      },
+      "get": {
+        "operationId": "getPostById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Post retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostView"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-auth": []
+          }
+        ],
+        "summary": "Get a post by Id",
+        "tags": [
+          "Post"
+        ]
+      },
+      "delete": {
+        "operationId": "deletePostById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Post deleted successfully"
+          }
+        },
+        "security": [
+          {
+            "x-auth": []
+          }
+        ],
+        "summary": "Delete a post by Id",
+        "tags": [
+          "Post"
         ]
       }
     }
@@ -251,7 +433,7 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "number",
+            "type": "string",
             "format": "uuid"
           },
           "name": {
@@ -290,11 +472,66 @@
           },
           "expiresIn": {
             "type": "number"
+          },
+          "userId": {
+            "type": "string"
           }
         },
         "required": [
           "token",
-          "expiresIn"
+          "expiresIn",
+          "userId"
+        ]
+      },
+      "PostBody": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "authorId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "content",
+          "authorId"
+        ]
+      },
+      "PostView": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserView"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "description",
+          "content",
+          "user"
         ]
       }
     }

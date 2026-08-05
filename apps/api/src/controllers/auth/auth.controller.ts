@@ -11,8 +11,8 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @ApiOperation({summary: "Login using credentials", operationId: "login"})
     @ApiResponse({
-        status: 201,
-        description: "User created successfully",
+        status: 200,
+        description: "User logged in successfully",
         type: AccessToken
     })
     async login(@Body() body: LoginBody){

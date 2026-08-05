@@ -27,7 +27,8 @@ export const login = async (body: LoginBody) : Promise<AccessToken> => {
         })
         return {
             token: token,
-            expiresIn: 3600
+            expiresIn: 3600,
+            userId: user.id
         }
     }
     throw new UnauthorizedException("Unauthorized action")

@@ -12,4 +12,9 @@ export class AccessToken{
     @ApiProperty()
     @IsNumber()
     public expiresIn: number
+
+    @Expose()
+    @ApiProperty()
+    @IsNumber()
+    public userId: string
 }

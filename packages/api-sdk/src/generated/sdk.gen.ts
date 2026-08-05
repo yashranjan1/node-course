@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CreateUserData, CreateUserResponses, DeleteUserByIdData, DeleteUserByIdResponses, GetUserByIdData, GetUserByIdResponses, ListUsersData, ListUsersResponses, LoginData, LoginResponses, UpdateUserByIdData, UpdateUserByIdResponses } from './types.gen';
+import type { CreatePostData, CreatePostResponses, CreateUserData, CreateUserResponses, DeletePostByIdData, DeletePostByIdResponses, DeleteUserByIdData, DeleteUserByIdResponses, GetPostByIdData, GetPostByIdResponses, GetUserByIdData, GetUserByIdResponses, ListPostsData, ListPostsResponses, ListUsersData, ListUsersResponses, LoginData, LoginResponses, UpdatePostData, UpdatePostResponses, UpdateUserByIdData, UpdateUserByIdResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -75,6 +75,59 @@ export const updateUserById = <ThrowOnError extends boolean = false>(options: Op
  */
 export const login = <ThrowOnError extends boolean = false>(options: Options<LoginData, ThrowOnError>): RequestResult<LoginResponses, unknown, ThrowOnError> => (options.client ?? client).post<LoginResponses, unknown, ThrowOnError>({
     url: '/api/auth/login',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List all posts
+ */
+export const listPosts = <ThrowOnError extends boolean = false>(options?: Options<ListPostsData, ThrowOnError>): RequestResult<ListPostsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListPostsResponses, unknown, ThrowOnError>({
+    security: [{ name: 'x-auth', type: 'apiKey' }],
+    url: '/api/posts',
+    ...options
+});
+
+/**
+ * Create a post
+ */
+export const createPost = <ThrowOnError extends boolean = false>(options: Options<CreatePostData, ThrowOnError>): RequestResult<CreatePostResponses, unknown, ThrowOnError> => (options.client ?? client).post<CreatePostResponses, unknown, ThrowOnError>({
+    security: [{ name: 'x-auth', type: 'apiKey' }],
+    url: '/api/posts',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Delete a post by Id
+ */
+export const deletePostById = <ThrowOnError extends boolean = false>(options: Options<DeletePostByIdData, ThrowOnError>): RequestResult<DeletePostByIdResponses, unknown, ThrowOnError> => (options.client ?? client).delete<DeletePostByIdResponses, unknown, ThrowOnError>({
+    security: [{ name: 'x-auth', type: 'apiKey' }],
+    url: '/api/posts/{id}',
+    ...options
+});
+
+/**
+ * Get a post by Id
+ */
+export const getPostById = <ThrowOnError extends boolean = false>(options: Options<GetPostByIdData, ThrowOnError>): RequestResult<GetPostByIdResponses, unknown, ThrowOnError> => (options.client ?? client).get<GetPostByIdResponses, unknown, ThrowOnError>({
+    security: [{ name: 'x-auth', type: 'apiKey' }],
+    url: '/api/posts/{id}',
+    ...options
+});
+
+/**
+ * Update a post
+ */
+export const updatePost = <ThrowOnError extends boolean = false>(options: Options<UpdatePostData, ThrowOnError>): RequestResult<UpdatePostResponses, unknown, ThrowOnError> => (options.client ?? client).patch<UpdatePostResponses, unknown, ThrowOnError>({
+    security: [{ name: 'x-auth', type: 'apiKey' }],
+    url: '/api/posts/{id}',
     ...options,
     headers: {
         'Content-Type': 'application/json',
